@@ -142,6 +142,8 @@ export class Mesa extends React.Component {
           }
     }
 
+    
+
     componentDidUpdate(prevProps){
         if(this.props.PlayersOnTable.length===1){
             this.props.PlayersOnTable[0].peopleOnTable=2

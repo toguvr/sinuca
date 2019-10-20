@@ -109,7 +109,6 @@ class App extends React.Component {
       mesa2: [],
       mesa3: [],
       mesa4: [],
-      atualTime:0
     }
   }
 
