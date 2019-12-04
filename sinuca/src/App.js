@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components'
 import { Mesa } from './Components/Mesa';
+import axios from 'axios'
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -121,27 +122,38 @@ class App extends React.Component {
   }
 
 
-  putOnTable = () => {
-    if (this.state.inputPlayer !== "") {
-      let local = 'mesa' + this.state.selectTable
-      let tamanho = this.state[local].length
-      let state = this.state[local]
+  putOnTable =async  () => {
+   try{ const data ={
+      jogador: this.state.inputPlayer,
+      dataCriacao:Number(new Date()),
+      mesa: Number(this.state.selectTable)
+    }
+console.log(data.dataCriacao)
+    const res =await axios.post(`http://sinuca.esy.es/putOnTable.php`,data)
+    console.log(res)
+  }catch (err){
+    console.log(err)
+  }
+  //   if (this.state.inputPlayer !== "") {
+  //     let local = 'mesa' + this.state.selectTable
+  //     let tamanho = this.state[local].length
+  //     let state = this.state[local]
       this.setState({
-        [local]: [...state, { 
-          id:Date.now(),
-          name: this.state.inputPlayer, 
-          startedTime: 0,
-          timeStarted:0,
-          finishTime:0,
-          peopleOnTable: tamanho +1,
-          PriceToPay:0,
-          timePlaying:0
-        }],
+  //       [local]: [...state, { 
+  //         id:Date.now(),
+  //         name: this.state.inputPlayer, 
+  //         startedTime: 0,
+  //         timeStarted:0,
+  //         finishTime:0,
+  //         peopleOnTable: tamanho +1,
+  //         PriceToPay:0,
+  //         timePlaying:0
+  //       }],
         inputPlayer: "",
       })
-    }else{
-      window.alert("Você não digitou o nome do jogador!")
-    }
+  //   }else{
+  //     window.alert("Você não digitou o nome do jogador!")
+  //   }
   }
 
   render() {
@@ -176,19 +188,19 @@ class App extends React.Component {
         <MesasContainer>
           <div>
             <h2>mesa 1</h2>
-            <Mesa SaveToState={this.saveToState} TableNumber="mesa1" PlayersOnTable={this.state.mesa1} />
+            <Mesa SaveToState={this.saveToState} TableNumber="1" PlayersOnTable={this.state.mesa1} />
           </div>
           <div>
             <h2>mesa 2</h2>
-            <Mesa SaveToState={this.saveToState} TableNumber="mesa2" PlayersOnTable={this.state.mesa2} />
+            <Mesa SaveToState={this.saveToState} TableNumber="2" PlayersOnTable={this.state.mesa2} />
           </div>
           <div>
             <h2>mesa 3</h2>
-            <Mesa SaveToState={this.saveToState} TableNumber="mesa3" PlayersOnTable={this.state.mesa3} />
+            <Mesa SaveToState={this.saveToState} TableNumber="3" PlayersOnTable={this.state.mesa3} />
           </div>
           <div>
             <h2>mesa 4</h2>
-            <Mesa SaveToState={this.saveToState} TableNumber="mesa4" PlayersOnTable={this.state.mesa4} />
+            <Mesa SaveToState={this.saveToState} TableNumber="4" PlayersOnTable={this.state.mesa4} />
           </div>
         </MesasContainer>
       </AppContainer>

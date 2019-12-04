@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components'
-import {Timer} from './Timer'
+import { Timer } from './Timer'
+import axios from 'axios'
 
 const MesaContainer = styled.div`
     background: #58433a;
@@ -112,78 +113,92 @@ export class Mesa extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            showTime:false,
-            atualTime:0
+            showTime: false,
+            atualTime: 0
         }
     }
 
-    transferProps=(item)=>{
+    transferProps = (item) => {
         this.setState(item)
         this.props.SaveToState(item)
     }
 
-    exitHall=(index)=>{
+    exitHall = (index) => {
         this.closeAccount()
         const newPlayersList = [...this.props.PlayersOnTable]
         let selectPlayer = newPlayersList[index]
         newPlayersList.splice(index, 1)
         this.props.SaveToState({
             currentPayment: selectPlayer,
-            [this.props.TableNumber]: newPlayersList})
+            [this.props.TableNumber]: newPlayersList
+        })
     }
 
-    closeAccount = () =>{
-        for(let pessoa of this.props.PlayersOnTable){
+    closeAccount = () => {
+        for (let pessoa of this.props.PlayersOnTable) {
             pessoa.finishTime = this.state.atualTime
-            pessoa.PriceToPay =  (((pessoa.finishTime - pessoa.startedTime)*(4/60)/pessoa.peopleOnTable)+ pessoa.PriceToPay )
+            pessoa.PriceToPay = (((pessoa.finishTime - pessoa.startedTime) * (4 / 60) / pessoa.peopleOnTable) + pessoa.PriceToPay)
             pessoa.timePlaying = pessoa.finishTime - pessoa.startedTime + pessoa.timePlaying
-            pessoa.startedTime=this.state.atualTime
-            pessoa.peopleOnTable=this.props.PlayersOnTable.length
-          }
+            pessoa.startedTime = this.state.atualTime
+            pessoa.peopleOnTable = this.props.PlayersOnTable.length
+        }
     }
 
-    
-
-    componentDidUpdate(prevProps){
-        if(this.props.PlayersOnTable.length===1){
-            this.props.PlayersOnTable[0].peopleOnTable=2
+    getPlayers = async () => {
+        try {
+            const res = await axios.get(`http://sinuca.esy.es/getPlayers.php?mesa=${this.props.TableNumber}`)
+            console.log(res)
+        } catch (err) {
+            console.log(err)
         }
-        if(prevProps.PlayersOnTable !== this.props.PlayersOnTable && this.props.PlayersOnTable.length>0){
-            const last = this.props.PlayersOnTable.length -1
-            for(let pessoa of prevProps.PlayersOnTable){
-                if(pessoa.id === this.props.PlayersOnTable[last].id){
+    }
+
+    componentDidMount() {
+        this.getPlayers()
+    }
+
+
+
+    componentDidUpdate(prevProps) {
+        if (this.props.PlayersOnTable.length === 1) {
+            this.props.PlayersOnTable[0].peopleOnTable = 2
+        }
+        if (prevProps.PlayersOnTable !== this.props.PlayersOnTable && this.props.PlayersOnTable.length > 0) {
+            const last = this.props.PlayersOnTable.length - 1
+            for (let pessoa of prevProps.PlayersOnTable) {
+                if (pessoa.id === this.props.PlayersOnTable[last].id) {
                     console.log('ja existia')
-                }else{
-                    this.props.PlayersOnTable[last].startedTime=this.state.atualTime
+                } else {
+                    this.props.PlayersOnTable[last].startedTime = this.state.atualTime
                 }
             }
-            
+
         }
-        if(prevProps.PlayersOnTable!==this.props.PlayersOnTable){
+        if (prevProps.PlayersOnTable !== this.props.PlayersOnTable) {
             this.closeAccount()
-          }
-          
-        if(prevProps.PlayersOnTable !== this.props.PlayersOnTable){
-            this.props.PlayersOnTable.length>1? this.setState({showTime:true}):this.setState({showTime:false})
+        }
+
+        if (prevProps.PlayersOnTable !== this.props.PlayersOnTable) {
+            this.props.PlayersOnTable.length > 1 ? this.setState({ showTime: true }) : this.setState({ showTime: false })
         }
     }
 
     render() {
-        let showTimeStarted 
-        if(this.state.showTime){
+        let showTimeStarted
+        if (this.state.showTime) {
             showTimeStarted = <Timer TransferProps={this.transferProps} />
         }
-        const playersPlaying = this.props.PlayersOnTable.map((player,index)=>{
+        const playersPlaying = this.props.PlayersOnTable.map((player, index) => {
             return <Nomes key={index}>
-            <Jogador>{player.name}</Jogador>
-            <Sair onClick={()=>this.exitHall(index)} src="https://image.flaticon.com/icons/svg/2122/2122095.svg" />
-        </Nomes>
+                <Jogador>{player.name}</Jogador>
+                <Sair onClick={() => this.exitHall(index)} src="https://image.flaticon.com/icons/svg/2122/2122095.svg" />
+            </Nomes>
         })
         return (
             <MesaContainer>
                 <MesaInterna>
-                {showTimeStarted}
-                {playersPlaying}
+                    {showTimeStarted}
+                    {playersPlaying}
                 </MesaInterna>
                 <Cacapa1 />
                 <Cacapa2 />
