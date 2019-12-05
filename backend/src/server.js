@@ -4,9 +4,10 @@ const routes = require('./routes')
 
 const app = express()
 
-mongoose.connect('mongodb+srv://guto:wsde123@sinuca-tkaai.mongodb.net/test?retryWrites=true&w=majority',{
+mongoose.connect('mongodb+srv://guto:guto@sinuca-tkaai.mongodb.net/test?retryWrites=true&w=majority',{
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false
 })
 
 //req.query = acessar query params(para filtros)
