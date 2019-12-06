@@ -8,8 +8,7 @@ const initialState = {
 const timer = (state = initialState, action) => {
     switch (action.type) {
         case "SET_TIMER":
-            const locale = "timer" + action.payload.currentTimer.tablePlaying
-            return { ...state, [locale]: action.payload.currentTimer.time }
+            return { ...state, timer1: action.payload.currentTimer.timer1, timer2: action.payload.currentTimer.timer2, timer3: action.payload.currentTimer.timer3, timer4: action.payload.currentTimer.timer4 }
         default:
             return state
     }

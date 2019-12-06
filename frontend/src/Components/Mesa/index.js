@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { MesaContainer, MesaInterna, Nomes, Cacapa1, Cacapa2, Cacapa3, Cacapa4, Cacapa5, Cacapa6, Sair, Jogador } from './styled'
 import Timer from '../Timer'
-import { updatePlayers, currentPayment, setCurrentTime, changePlayer, getPlayers, leaveTable, updateAllPlayersPayment, timeZeroed } from '../../actions'
+import { updatePlayers, currentPayment, setCurrentTime, changePlayer, getPlayers, leaveTable, updateAllPlayersPayment, timeZeroed, updateTimer } from '../../actions'
 
 export class Mesa extends React.Component {
     constructor(props) {
@@ -53,7 +53,7 @@ export class Mesa extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { allGames, allTimers, tableNumber, updatePlayers, setCurrentTime, timeZeroed } = this.props
+        const { allGames, allTimers, tableNumber, updatePlayers, setCurrentTime, timeZeroed, updateTimer } = this.props
 
         const locale = "mesa" + tableNumber
         const localeTimer = "timer" + tableNumber
@@ -61,10 +61,10 @@ export class Mesa extends React.Component {
 
         if(playersPlaying.length===1 && allTimers[localeTimer]!==0){
             //se tiver somente um jogador na mesa e o tempo for diferente de 0 ele ira zera o contador
-            setCurrentTime({tablePlaying: tableNumber, time: 0})
-            // changePlayer(0,locale)
+            updateTimer(0, tableNumber)
+            
         }
-
+        //se o tempo zerar, atualiza os jogadores que ainda estao na mesa com o finish time 0  started 0 
         if(prevProps.allTimers[localeTimer] > allTimers[localeTimer]){
             timeZeroed(locale, tableNumber)
         }
@@ -119,6 +119,7 @@ const mapDispatchToProps = dispatch => ({
     leaveTable: (player_id, table_id) => dispatch(leaveTable(player_id, table_id)),
     updateAllPlayersPayment: (playersArray, table_id) => dispatch(updateAllPlayersPayment(playersArray, table_id)),
     timeZeroed: (table, tableNumber) => dispatch(timeZeroed(table, tableNumber)),
+    updateTimer: (time, tableNumber) => dispatch(updateTimer(time, tableNumber)),
 
 })
 

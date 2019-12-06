@@ -21,7 +21,6 @@ const snooker = (state = initialState, action) => {
             return { ...state, [localeTable]: playersOnTable }
         case "SET_PLAYERS_ON_TABLE":
             const localeTablePlayers = "mesa" + action.payload.table_id
-            console.log(localeTablePlayers)
             return { ...state, [localeTablePlayers]: action.payload.players }
         case "CURRENT_PLAYER_PAYMENT":
             return { ...state, currentPayment: action.payload.currentPlayer }
