@@ -3,14 +3,22 @@ import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import Mesa from '../../Components/Mesa';
 import { setPlayer, addPlayer } from '../../actions';
-import { AppContainer, PriceToPay, HeaderDiv, MesasContainer, SelectForm, InputtForm, ButtonForm, HeaderForm, HeaderLogo,Title } from './styled'
-
+import { AppContainer, PriceToPay, HeaderDiv, MesasContainer, SelectForm, InputtForm, ButtonForm, HeaderForm, HeaderLogo, Title } from './styled'
+import socketio from 'socket.io-client'
 
 class HomePage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
     }
+  }
+
+  componentDidMount() {
+    const socket = socketio('http://localhost:3333')
+    socket.emit('omni', 'Msg do Front')
+    socket.on('hello', data=>{
+      console.log(data)
+    })
   }
 
   render() {
@@ -20,7 +28,7 @@ class HomePage extends React.Component {
     return (
       <AppContainer>
         <HeaderDiv>
-          <HeaderLogo src="http://clubecomercialvr.com.br/Home/images/logo.png" alt="logo comercial"/>
+          <HeaderLogo src="http://clubecomercialvr.com.br/Home/images/logo.png" alt="logo comercial" />
           <Title>Atletas</Title>
           <div></div>
         </HeaderDiv>
