@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { MesaContainer, MesaInterna, Nomes, Cacapa1, Cacapa2, Cacapa3, Cacapa4, Cacapa5, Cacapa6, Sair, Jogador } from './styled'
 import Timer from '../Timer'
-import { updatePlayers, currentPayment, setCurrentTime, changePlayer, getPlayers, leaveTable, updateAllPlayersPayment, timeZeroed, updateTimer } from '../../actions'
+import { updatePlayers, currentPayment, setCurrentTime, changePlayer, getPlayers, leaveTable, updateAllPlayersPayment, timeZeroed, getTimers } from '../../actions'
 
 export class Mesa extends React.Component {
     constructor(props) {
@@ -53,7 +53,7 @@ export class Mesa extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { allGames, allTimers, tableNumber, updatePlayers, setCurrentTime, timeZeroed, updateTimer } = this.props
+        const { allGames, allTimers, tableNumber, updatePlayers, setCurrentTime, timeZeroed } = this.props
 
         const locale = "mesa" + tableNumber
         const localeTimer = "timer" + tableNumber
@@ -61,10 +61,10 @@ export class Mesa extends React.Component {
 
         if(playersPlaying.length===1 && allTimers[localeTimer]!==0){
             //se tiver somente um jogador na mesa e o tempo for diferente de 0 ele ira zera o contador
-            updateTimer(0, tableNumber)
-            
+            setCurrentTime({tablePlaying: tableNumber, time: 0})
+            // changePlayer(0,locale)
         }
-        //se o tempo zerar, atualiza os jogadores que ainda estao na mesa com o finish time 0  started 0 
+
         if(prevProps.allTimers[localeTimer] > allTimers[localeTimer]){
             timeZeroed(locale, tableNumber)
         }
@@ -77,14 +77,13 @@ export class Mesa extends React.Component {
 
     render() {
 
-        const showTimeStarted = <Timer tablePlaying={this.props.tableNumber} saveTime={this.saveTime}/>
+        const showTimeStarted = <Timer tablePlaying={this.props.tableNumber}/>
 
         const locale = "mesa" + this.props.tableNumber
 
         const playersPlaying = this.props.allGames[locale].map((player, index) => {
             return <Nomes key={index}>
                 <Jogador>{player.playerName}</Jogador>
-                <Sair onClick={() => this.exitHall(player)} src="https://image.flaticon.com/icons/svg/2122/2122095.svg" />
             </Nomes>
         })
         return (
@@ -116,10 +115,10 @@ const mapDispatchToProps = dispatch => ({
     setCurrentTime: (currentTime) => dispatch(setCurrentTime(currentTime)),
     changePlayer: (id, locale) => dispatch(changePlayer(id, locale)),
     getPlayers: (table_id) => dispatch(getPlayers(table_id)),
+    getTimers: () => dispatch(getTimers()),
     leaveTable: (player_id, table_id) => dispatch(leaveTable(player_id, table_id)),
     updateAllPlayersPayment: (playersArray, table_id) => dispatch(updateAllPlayersPayment(playersArray, table_id)),
     timeZeroed: (table, tableNumber) => dispatch(timeZeroed(table, tableNumber)),
-    updateTimer: (time, tableNumber) => dispatch(updateTimer(time, tableNumber)),
 
 })
 

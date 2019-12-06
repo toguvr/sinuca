@@ -94,15 +94,12 @@ export const updateAllPlayersPayment = (playersArray, table_id) => async (dispat
     }
 }
 
-export const updateTimer = (time, tableNumber) => async (dispatch) => {
-    const body = {
-        time
-    }
+export const timeZeroed = (table, table_number) => async (dispatch) => {
 
-    const response = await axios.put(`${baseUrl}/timer/${tableNumber}`, body)
+    const response = await axios.put(`${baseUrl}/time/${table}`)
 
     if (response.status === 200) {
-        dispatch(setCurrentTime(response.data))
+        dispatch(setPlayersOnTable(response.data, table_number))
     }
 }
 
@@ -111,14 +108,5 @@ export const getTimers = () => async (dispatch) => {
 
     if (response.status === 200) {
         dispatch(setCurrentTime(response.data))
-    }
-}
-
-export const timeZeroed = (table, table_number) => async (dispatch) => {
-
-    const response = await axios.put(`${baseUrl}/time/${table}`)
-
-    if (response.status === 200) {
-        dispatch(setPlayersOnTable(response.data, table_number))
     }
 }

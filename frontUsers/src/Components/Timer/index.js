@@ -1,5 +1,5 @@
 import React from 'react';
-import { setCurrentTime, getTimers, updateTimer } from '../../actions'
+import { setCurrentTime, getTimers } from '../../actions'
 import { connect } from "react-redux";
 
 class Timer extends React.Component {
@@ -11,12 +11,10 @@ class Timer extends React.Component {
   }
 
   componentDidMount() {
-    const {getTimers, updateTimer, tablePlaying} = this.props
-    getTimers()
-
-    updateTimer({
+    this.props.getTimers()
+    setCurrentTime({
       time: 0,
-      tablePlaying: tablePlaying
+      tablePlaying: this.props.tablePlaying
     })
 
     this.timerID = setInterval(
@@ -33,10 +31,10 @@ class Timer extends React.Component {
   tick() {
     const locale = "timer" + this.props.tablePlaying
     const currentTime = this.props.timer[locale]
-    this.props.updateTimer(
-      currentTime + 1,
-      this.props.tablePlaying
-    );
+    this.props.setCurrentTime({
+      time: currentTime + 1,
+      tablePlaying: this.props.tablePlaying
+    });
   }
 
 
@@ -60,7 +58,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   setCurrentTime: (playerData) => dispatch(setCurrentTime(playerData)),
   getTimers: () => dispatch(getTimers()),
-  updateTimer: (time, tableNumber) => dispatch(updateTimer(time, tableNumber)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timer)
