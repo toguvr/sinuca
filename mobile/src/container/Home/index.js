@@ -3,6 +3,7 @@ import Mesa from '../../componentes/Mesa';
 import { StyleSheet, Text, SafeAreaView, Image, View, ScrollView } from 'react-native';
 import styled from "styled-components/native";
 import api from '../../actions'
+import socketio from 'socket.io-client'
 
 function HomePage(props) {
   const [timer, setTimer] = useState({ timer1: 0, timer2: 0, timer3: 0, timer4: 0 })
@@ -13,6 +14,10 @@ function HomePage(props) {
 
 
   useEffect(() => {
+    const socket = socketio('http://192.168.29.6:3333')
+    socket.on('hello', data=>{
+      console.log(data)
+    })
     getTimers()
     getPlayers(1)
     getPlayers(2)
