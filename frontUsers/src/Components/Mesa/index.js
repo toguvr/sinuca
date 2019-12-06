@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { MesaContainer, MesaInterna, Nomes, Cacapa1, Cacapa2, Cacapa3, Cacapa4, Cacapa5, Cacapa6, Sair, Jogador } from './styled'
 import Timer from '../Timer'
-import { updatePlayers, currentPayment, setCurrentTime, changePlayer, getPlayers, leaveTable, updateAllPlayersPayment, timeZeroed } from '../../actions'
+import { updatePlayers, currentPayment, setCurrentTime, changePlayer, getPlayers, leaveTable, updateAllPlayersPayment, timeZeroed, getTimers } from '../../actions'
 
 export class Mesa extends React.Component {
     constructor(props) {
@@ -77,7 +77,7 @@ export class Mesa extends React.Component {
 
     render() {
 
-        const showTimeStarted = <Timer tablePlaying={this.props.tableNumber} saveTime={this.saveTime}/>
+        const showTimeStarted = <Timer tablePlaying={this.props.tableNumber}/>
 
         const locale = "mesa" + this.props.tableNumber
 
@@ -115,6 +115,7 @@ const mapDispatchToProps = dispatch => ({
     setCurrentTime: (currentTime) => dispatch(setCurrentTime(currentTime)),
     changePlayer: (id, locale) => dispatch(changePlayer(id, locale)),
     getPlayers: (table_id) => dispatch(getPlayers(table_id)),
+    getTimers: () => dispatch(getTimers()),
     leaveTable: (player_id, table_id) => dispatch(leaveTable(player_id, table_id)),
     updateAllPlayersPayment: (playersArray, table_id) => dispatch(updateAllPlayersPayment(playersArray, table_id)),
     timeZeroed: (table, tableNumber) => dispatch(timeZeroed(table, tableNumber)),

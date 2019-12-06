@@ -102,3 +102,11 @@ export const timeZeroed = (table, table_number) => async (dispatch) => {
         dispatch(setPlayersOnTable(response.data, table_number))
     }
 }
+
+export const getTimers = () => async (dispatch) => {
+    const response = await axios.get(`${baseUrl}/timer/`)
+
+    if (response.status === 200) {
+        dispatch(setCurrentTime(response.data))
+    }
+}
