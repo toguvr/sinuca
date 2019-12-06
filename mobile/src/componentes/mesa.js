@@ -1,126 +1,145 @@
 import React from "react";
 import { connect } from "react-redux";
-import { MesaContainer, MesaInterna, Nomes, Cacapa1, Cacapa2, Cacapa3, Cacapa4, Cacapa5, Cacapa6, Sair, Jogador } from './styled'
-import Timer from '../Timer'
-import { updatePlayers, currentPayment, setCurrentTime, changePlayer, getPlayers, leaveTable, updateAllPlayersPayment, timeZeroed, getTimers } from '../../actions'
+import { updatePlayers, currentPayment, setCurrentTime, changePlayer, getPlayers, leaveTable, updateAllPlayersPayment, timeZeroed, getTimers } from '../actions'
+import { StyleSheet, Text, SafeAreaView, Image, View, ScrollView } from 'react-native';
+import { vw, vh, vmin, vmax } from 'react-native-expo-viewport-units';
+import styled from 'styled-components/native'
 
-export class Mesa extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {}
-        
-    }
+const Mesa = (props) => {
 
-    componentDidMount() {
-        this.props.getPlayers(this.props.tableNumber)
-    }
+    const playersPlaying = props.players.map((player, index) => {
+        return <Nomes key={index}>
+            <Jogador>{player.playerName}</Jogador>
+        </Nomes>
+    })
 
-
-    exitHall = (player) => {
-        const { allGames, allTimers, tableNumber, updatePlayers, currentPayment, leaveTable, updateAllPlayersPayment } = this.props
-        //fecha a conta de todos os jogadores
-        this.closeAccount()
-        //salvar na api o pagamento final
-        leaveTable(player, tableNumber)
-    }
-
-    closeAccount = () => {
-
-        const { allGames, allTimers, tableNumber, updatePlayers, updateAllPlayersPayment,getPlayers } = this.props
-
-        const locale = "mesa" + tableNumber
-        const localeTimer = "timer" + tableNumber
-        const playersPlaying = allGames[locale]
-        const currentTime = allTimers[localeTimer]
-        const newPlayersList = [...playersPlaying]
-        const timePrice = 4
-        
-        for (let pessoa of newPlayersList) {
-
-            //tempo de fim igual ao tempo atual
-            pessoa.finishTime = currentTime
-            //preço a se pagar é o tempo final - o inicial * o preço da hora / 60 para ficar em minutos e isto tudo dividido pela quantidade de pessoas jogando mais o preço que ja devia
-            pessoa.PriceToPay = Number(((pessoa.finishTime - pessoa.startedTime) * (timePrice / 60) / pessoa.peopleOnTable) + pessoa.PriceToPay)
-            //tempo jogando e o tempo que parou o que começou mais o tempo que ja estava na mesa anteas de fechar a conta
-            pessoa.timePlaying = pessoa.finishTime - pessoa.startedTime + pessoa.timePlaying
-            //tempo inicial igual ao tempo atual
-            pessoa.startedTime = currentTime
-            //numero de pessoas na mesa vira o numero atual de pessoas
-            pessoa.peopleOnTable = playersPlaying.length
-        }
-        
-        updateAllPlayersPayment(newPlayersList, tableNumber)
-    }
-
-    componentDidUpdate(prevProps) {
-        const { allGames, allTimers, tableNumber, updatePlayers, setCurrentTime, timeZeroed } = this.props
-
-        const locale = "mesa" + tableNumber
-        const localeTimer = "timer" + tableNumber
-        const playersPlaying = allGames[locale]
-
-        if(playersPlaying.length===1 && allTimers[localeTimer]!==0){
-            //se tiver somente um jogador na mesa e o tempo for diferente de 0 ele ira zera o contador
-            setCurrentTime({tablePlaying: tableNumber, time: 0})
-            // changePlayer(0,locale)
-        }
-
-        if(prevProps.allTimers[localeTimer] > allTimers[localeTimer]){
-            timeZeroed(locale, tableNumber)
-        }
-
-        if(prevProps.allGames[locale].length !== playersPlaying.length && playersPlaying.length>1){
-            //se alterar o quantidade de jogadores na mesa, atualiza a conta de todos
-            this.closeAccount()
-        }
-    }
-
-    render() {
-
-        const showTimeStarted = <Timer tablePlaying={this.props.tableNumber}/>
-
-        const locale = "mesa" + this.props.tableNumber
-
-        const playersPlaying = this.props.allGames[locale].map((player, index) => {
-            return <Nomes key={index}>
-                <Jogador>{player.playerName}</Jogador>
-            </Nomes>
-        })
-        return (
-            <MesaContainer>
-                <MesaInterna>
-                    {this.props.allGames[locale].length > 1 ? showTimeStarted : null}
+    return (
+        <MesaContainer>
+            <MesaInterna>
+                <ScrollView>
                     {playersPlaying}
-                </MesaInterna>
-                <Cacapa1 />
-                <Cacapa2 />
-                <Cacapa3 />
-                <Cacapa4 />
-                <Cacapa5 />
-                <Cacapa6 />
-            </MesaContainer>
-        )
-    }
+                </ScrollView>
+            </MesaInterna>
+            <Cacapa1 />
+            <Cacapa2 />
+            <Cacapa3 />
+            <Cacapa4 />
+            <Cacapa5 />
+            <Cacapa6 />
+        </MesaContainer>
+    )
+
 }
 
+const MesaContainer = styled.View`
+    background-color: #58433a;
+    color:white;
+    height:345px;
+    width:210px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position: relative;
+    border-radius:10px;
+    box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+`
 
-const mapStateToProps = state => ({
-    allGames: state.snooker,
-    allTimers: state.timer
-})
+export const MesaInterna = styled.View`
+    background: #009484;
+    color:white;
+    height:310px;
+    width:170px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    align-items:center;
+    overflow:scroll;
 
-const mapDispatchToProps = dispatch => ({
-    updatePlayers: (playerData, locale) => dispatch(updatePlayers(playerData, locale)),
-    currentPayment: (currentPlayer) => dispatch(currentPayment(currentPlayer)),
-    setCurrentTime: (currentTime) => dispatch(setCurrentTime(currentTime)),
-    changePlayer: (id, locale) => dispatch(changePlayer(id, locale)),
-    getPlayers: (table_id) => dispatch(getPlayers(table_id)),
-    getTimers: () => dispatch(getTimers()),
-    leaveTable: (player_id, table_id) => dispatch(leaveTable(player_id, table_id)),
-    updateAllPlayersPayment: (playersArray, table_id) => dispatch(updateAllPlayersPayment(playersArray, table_id)),
-    timeZeroed: (table, tableNumber) => dispatch(timeZeroed(table, tableNumber)),
+    ::-webkit-scrollbar-track {
+    background-color: transparent;
+    }
 
-})
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Mesa)
+    ::-webkit-scrollbar-thumb {
+        background: #c8a574;
+    }
+`
+
+export const Nomes = styled.View`
+    display:flex;
+    justify-content:center;
+    align-items:center;
+`
+
+export const Cacapa1 = styled.View`
+    background:black;
+    border-radius:50px;
+    width:20px;
+    height:20px;
+    position: absolute;
+    top:0;
+    left:0;
+`
+
+export const Cacapa2 = styled.View`
+    background:black;
+    border-radius:50px;
+    width:20px;
+    height:20px;
+    position: absolute;
+    top:0;
+    right:0;
+`
+
+export const Cacapa3 = styled.View`
+    background:black;
+    border-radius:50px;
+    width:20px;
+    height:20px;
+    position: absolute;
+    top:50%;
+    right:0;
+`
+
+export const Cacapa4 = styled.View`
+    background:black;
+    border-radius:50px;
+    width:20px;
+    height:20px;
+    position: absolute;
+    top:50%;
+    left:0;
+`
+
+export const Cacapa5 = styled.View`
+    background:black;
+    border-radius:50px;
+    width:20px;
+    height:20px;
+    position: absolute;
+    bottom:0;
+    right:0;
+`
+
+export const Cacapa6 = styled.View`
+    background:black;
+    border-radius:50px;
+    width:20px;
+    height:20px;
+    position: absolute;
+    bottom:0;
+    left:0;
+`
+
+export const Jogador = styled.Text`
+    margin:10px;
+    color: white;
+    font-size:20px;
+    text-align:center;
+`
+
+export default Mesa
 
