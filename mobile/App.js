@@ -4,7 +4,8 @@ import { YellowBox } from 'react-native'
 
 YellowBox.ignoreWarnings([
   'Unrecognized WebSocket',
-  'Node of type rule'
+  'Node of type rule',
+  'Possible Unhandled'
 ])
 
 export default function App() {

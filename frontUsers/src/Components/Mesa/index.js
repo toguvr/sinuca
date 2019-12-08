@@ -11,77 +11,9 @@ export class Mesa extends React.Component {
         
     }
 
-    componentDidMount() {
-        this.props.getPlayers(this.props.tableNumber)
-    }
-
-
-    exitHall = (player) => {
-        const { allGames, allTimers, tableNumber, updatePlayers, currentPayment, leaveTable, updateAllPlayersPayment } = this.props
-        //fecha a conta de todos os jogadores
-        this.closeAccount()
-        //salvar na api o pagamento final
-        leaveTable(player, tableNumber)
-    }
-
-    closeAccount = () => {
-
-        const { allGames, allTimers, tableNumber, updatePlayers, updateAllPlayersPayment,getPlayers } = this.props
-
-        const locale = "mesa" + tableNumber
-        const localeTimer = "timer" + tableNumber
-        const playersPlaying = allGames[locale]
-        const currentTime = allTimers[localeTimer]
-        const newPlayersList = [...playersPlaying]
-        const timePrice = 4
-        
-        for (let pessoa of newPlayersList) {
-
-            //tempo de fim igual ao tempo atual
-            pessoa.finishTime = currentTime
-            //preço a se pagar é o tempo final - o inicial * o preço da hora / 60 para ficar em minutos e isto tudo dividido pela quantidade de pessoas jogando mais o preço que ja devia
-            pessoa.PriceToPay = Number(((pessoa.finishTime - pessoa.startedTime) * (timePrice / 60) / pessoa.peopleOnTable) + pessoa.PriceToPay)
-            //tempo jogando e o tempo que parou o que começou mais o tempo que ja estava na mesa anteas de fechar a conta
-            pessoa.timePlaying = pessoa.finishTime - pessoa.startedTime + pessoa.timePlaying
-            //tempo inicial igual ao tempo atual
-            pessoa.startedTime = currentTime
-            //numero de pessoas na mesa vira o numero atual de pessoas
-            pessoa.peopleOnTable = playersPlaying.length
-        }
-        
-        updateAllPlayersPayment(newPlayersList, tableNumber)
-    }
-
-    componentDidUpdate(prevProps) {
-        const { allGames, allTimers, tableNumber, updatePlayers, setCurrentTime, timeZeroed } = this.props
-
-        const locale = "mesa" + tableNumber
-        const localeTimer = "timer" + tableNumber
-        const playersPlaying = allGames[locale]
-
-        if(playersPlaying.length===1 && allTimers[localeTimer]!==0){
-            //se tiver somente um jogador na mesa e o tempo for diferente de 0 ele ira zera o contador
-            setCurrentTime({tablePlaying: tableNumber, time: 0})
-            // changePlayer(0,locale)
-        }
-
-        if(prevProps.allTimers[localeTimer] > allTimers[localeTimer]){
-            timeZeroed(locale, tableNumber)
-        }
-
-        if(prevProps.allGames[locale].length !== playersPlaying.length && playersPlaying.length>1){
-            //se alterar o quantidade de jogadores na mesa, atualiza a conta de todos
-            this.closeAccount()
-        }
-    }
-
     render() {
 
-        const showTimeStarted = <Timer tablePlaying={this.props.tableNumber}/>
-
-        const locale = "mesa" + this.props.tableNumber
-
-        const playersPlaying = this.props.allGames[locale].map((player, index) => {
+        const playersPlaying = this.props.players.map((player, index) => {
             return <Nomes key={index}>
                 <Jogador>{player.playerName}</Jogador>
             </Nomes>
@@ -89,7 +21,6 @@ export class Mesa extends React.Component {
         return (
             <MesaContainer>
                 <MesaInterna>
-                    {this.props.allGames[locale].length > 1 ? showTimeStarted : null}
                     {playersPlaying}
                 </MesaInterna>
                 <Cacapa1 />
