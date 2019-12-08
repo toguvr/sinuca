@@ -4,6 +4,7 @@ import { StyleSheet, Text, SafeAreaView, Image, View, ScrollView } from 'react-n
 import styled from "styled-components/native";
 import api from '../../actions'
 import socketio from 'socket.io-client'
+import { vw } from "react-native-expo-viewport-units";
 
 function HomePage(props) {
   const [timer, setTimer] = useState({ timer1: 0, timer2: 0, timer3: 0, timer4: 0 })
@@ -15,8 +16,17 @@ function HomePage(props) {
 
   useEffect(() => {
     const socket = socketio('http://192.168.29.6:3333')
-    socket.on('hello', data=>{
-      console.log(data)
+    socket.on('updatedPlayersList', data=>{
+      setTimer(data.timer)
+      if (data.tableNumber == "1") {
+        setPlayers1(data.players)
+      } else if (data.tableNumber == "2") {
+        setPlayers2(data.players)
+      } else if (data.tableNumber == "3") {
+        setPlayers3(data.players)
+      } else if (data.tableNumber == "4") {
+        setPlayers4(data.players)
+      }
     })
     getTimers()
     getPlayers(1)

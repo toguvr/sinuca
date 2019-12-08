@@ -1,7 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const routes = require('./routes')
-
+const cors = require('cors')
 const socketio = require('socket.io')
 const http = require('http')
 
@@ -15,8 +15,11 @@ io.on('connection', socket => {
         console.log(data)
       })
     socket.emit('hello', 'Msg do Back')
+})
 
-
+app.use((req,res,next)=>{
+    req.io=io
+    return next()
 })
 
 
@@ -29,7 +32,7 @@ mongoose.connect('mongodb+srv://guto:guto@sinuca-tkaai.mongodb.net/test?retryWri
 //req.query = acessar query params(para filtros)
 //query.params = acessar route params (para edicao, delete)
 //query.body = acessar corpo da requisicao (para criacao e edicao)
-
+app.use(cors())
 app.use(express.json())
 app.use(routes)
 

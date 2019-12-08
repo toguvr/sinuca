@@ -2,6 +2,7 @@ const Table1 = require('../models/Table1')
 const Table2 = require('../models/Table2')
 const Table3 = require('../models/Table3')
 const Table4 = require('../models/Table4')
+const Timer = require('../models/Timer')
 
 module.exports = {
     async index(req, res) {
@@ -16,6 +17,10 @@ module.exports = {
         } else if (table_id == 4) {
             table = await Table4.find({ playing: true })
         }
+
+        const showTime = await Timer.find()
+
+        req.io.emit('updatedPlayersList', {players: table, tableNumber: table_id, timer: showTime[0]})
 
         return res.json(table)
     },

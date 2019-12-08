@@ -39,6 +39,7 @@ export const MesasContainer = styled.div`
   flex-grow:1;
   justify-content:space-evenly;
   flex-wrap:wrap;
+  padding-bottom:60px;
 `
 
 export const SelectForm = styled.select`
