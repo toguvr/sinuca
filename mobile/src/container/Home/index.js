@@ -15,7 +15,8 @@ function HomePage(props) {
 
 
   useEffect(() => {
-    const socket = socketio('http://192.168.29.6:3333')
+    //http://sinucaback.herokuapp.com/
+    const socket = socketio(process.env.REACT_APP_API_URL)
     socket.on('updatedPlayersList', data=>{
       setTimer(data.timer)
       if (data.tableNumber == "1") {
